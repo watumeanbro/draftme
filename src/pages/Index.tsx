@@ -52,7 +52,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-[720px] px-5 py-16">
+      <div className="mx-auto max-w-4xl px-5 py-16">
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-2.5 mb-3">
