@@ -41,14 +41,7 @@ const Index = () => {
     }
   };
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(draft);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const isFormValid = formData.name && formData.university && formData.background && formData.achievement && formData.motivation;
-  const tips = TIPS[formData.documentType];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
