@@ -17,7 +17,7 @@ serve(async (req) => {
   }
 
   try {
-    const { name, documentType, university, background, achievement, motivation } = await req.json();
+    const { name, documentType, language, university, background, achievement, motivation } = await req.json();
 
     if (!name || !documentType || !university || !background || !achievement || !motivation) {
       return new Response(JSON.stringify({ error: "All fields are required." }), {
@@ -27,13 +27,14 @@ serve(async (req) => {
     }
 
     const docName = DOCUMENT_TYPE_NAMES[documentType] || "application letter";
+    const langName = language || "English";
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are a skilled academic writing coach. You write in a natural, personal, and authentic tone — never robotic or formulaic. You avoid clichés like "I am passionate about" or "Since I was a child." Your writing sounds like a thoughtful student, not an AI. You produce exactly one draft with no preamble, no commentary, and no sign-off — just the body text.`;
+    const systemPrompt = `You are a skilled academic writing coach. You write in a natural, personal, and authentic tone — never robotic or formulaic. You avoid clichés like "I am passionate about" or "Since I was a child." Your writing sounds like a thoughtful student, not an AI. You produce exactly one draft with no preamble, no commentary, and no sign-off — just the body text. You write in ${langName}.`;
 
-    const userPrompt = `Write a ${docName} for ${name}, who is applying to ${university}.
+    const userPrompt = `Write a ${docName} in ${langName} for ${name}, who is applying to ${university}.
 
 Background: ${background}
 
@@ -41,7 +42,7 @@ Biggest achievement: ${achievement}
 
 Why they want this opportunity: ${motivation}
 
-Write 300–400 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs.`;
+Write 300–400 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs. Write entirely in ${langName}.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -1,13 +1,22 @@
 export type DocumentType = 'personal-statement' | 'scholarship' | 'erasmus';
+export type Language = 'english' | 'arabic' | 'italian' | 'french';
 
 export interface DraftFormData {
   name: string;
   documentType: DocumentType;
+  language: Language;
   university: string;
   background: string;
   achievement: string;
   motivation: string;
 }
+
+export const LANGUAGE_LABELS: Record<Language, string> = {
+  english: 'English',
+  arabic: 'Arabic',
+  italian: 'Italian',
+  french: 'French',
+};
 
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   'personal-statement': 'Personal Statement',
