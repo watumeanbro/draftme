@@ -33,7 +33,7 @@ const Index = () => {
 
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
-      setDraft(data.draft);
+      navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType } });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.');
     } finally {
