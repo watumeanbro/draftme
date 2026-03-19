@@ -24,7 +24,7 @@ const Index = () => {
   const handleGenerate = async () => {
     setLoading(true);
     setError('');
-    setDraft('');
+    
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('generate-draft', {
