@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { DraftFormData, DocumentType, DOCUMENT_TYPE_LABELS, TIPS } from '@/lib/draft-types';
+import { useNavigate } from 'react-router-dom';
+import { DraftFormData, DocumentType, DOCUMENT_TYPE_LABELS } from '@/lib/draft-types';
 import { supabase } from '@/integrations/supabase/client';
-import { Copy, Check, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 const Index = () => {
   const [formData, setFormData] = useState<DraftFormData>({
