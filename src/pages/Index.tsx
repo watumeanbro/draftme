@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DraftFormData, DocumentType, Language, DOCUMENT_TYPE_LABELS, LANGUAGE_LABELS } from '@/lib/draft-types';
+import { DraftFormData, DocumentType, Language, LANGUAGE_LABELS } from '@/lib/draft-types';
+import { translations } from '@/lib/translations';
 import { supabase } from '@/integrations/supabase/client';
-import { FileText } from 'lucide-react';
+import { FileText, Globe } from 'lucide-react';
 
 const Index = () => {
   const [formData, setFormData] = useState<DraftFormData>({
@@ -18,6 +19,9 @@ const Index = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const t = translations[formData.language];
+  const isRTL = formData.language === 'arabic';
+
   const updateField = <K extends keyof DraftFormData>(key: K, value: DraftFormData[K]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
@@ -25,7 +29,6 @@ const Index = () => {
   const handleGenerate = async () => {
     setLoading(true);
     setError('');
-    
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('generate-draft', {
@@ -34,7 +37,7 @@ const Index = () => {
 
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
-      navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType } });
+      navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType, language: formData.language } });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.');
     } finally {
@@ -44,57 +47,63 @@ const Index = () => {
 
   const isFormValid = formData.name && formData.university && formData.background && formData.achievement && formData.motivation;
 
+  const docTypeLabels: Record<DocumentType, string> = {
+    'personal-statement': t.docTypePersonalStatement,
+    scholarship: t.docTypeScholarship,
+    erasmus: t.docTypeErasmus,
+  };
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-4xl px-5 py-16">
+        {/* Language selector — top right */}
+        <div className={`flex ${isRTL ? 'justify-start' : 'justify-end'} mb-8`}>
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={formData.language}
+              onChange={e => updateField('language', e.target.value as Language)}
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none cursor-pointer"
+            >
+              {Object.entries(LANGUAGE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-2.5 mb-3">
             <FileText className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-semibold tracking-tight">DraftMe</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{t.appName}</h1>
           </div>
-          <p className="text-muted-foreground text-sm">
-            Generate a first draft for your application in seconds.
-          </p>
+          <p className="text-muted-foreground text-sm">{t.appTagline}</p>
         </div>
 
         {/* Form */}
         <div className="space-y-6">
           {/* Name */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Your name</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelName}</label>
             <input
               type="text"
               value={formData.name}
               onChange={e => updateField('name', e.target.value)}
-              placeholder="e.g. Maria Gonzalez"
+              placeholder={t.placeholderName}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Document Type */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Document type</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelDocType}</label>
             <select
               value={formData.documentType}
               onChange={e => updateField('documentType', e.target.value as DocumentType)}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none"
             >
-              {Object.entries(DOCUMENT_TYPE_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Language */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Language</label>
-            <select
-              value={formData.language}
-              onChange={e => updateField('language', e.target.value as Language)}
-              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none"
-            >
-              {Object.entries(LANGUAGE_LABELS).map(([value, label]) => (
+              {Object.entries(docTypeLabels).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
@@ -102,23 +111,23 @@ const Index = () => {
 
           {/* University */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">University or program</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelUniversity}</label>
             <input
               type="text"
               value={formData.university}
               onChange={e => updateField('university', e.target.value)}
-              placeholder="e.g. MSc Computer Science at TU Munich"
+              placeholder={t.placeholderUniversity}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
 
           {/* Background */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Your background in 2–3 sentences</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelBackground}</label>
             <textarea
               value={formData.background}
               onChange={e => updateField('background', e.target.value)}
-              placeholder="e.g. I'm a final-year student in Electrical Engineering at the University of Lisbon. I've been involved in robotics research since my second year..."
+              placeholder={t.placeholderBackground}
               rows={3}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
@@ -126,11 +135,11 @@ const Index = () => {
 
           {/* Achievement */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Your biggest achievement</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelAchievement}</label>
             <textarea
               value={formData.achievement}
               onChange={e => updateField('achievement', e.target.value)}
-              placeholder="e.g. I led a team that won the national robotics competition, designing a robot that could navigate disaster scenarios..."
+              placeholder={t.placeholderAchievement}
               rows={3}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
@@ -138,11 +147,11 @@ const Index = () => {
 
           {/* Motivation */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">Why you want this opportunity</label>
+            <label className="text-sm font-medium text-muted-foreground">{t.labelMotivation}</label>
             <textarea
               value={formData.motivation}
               onChange={e => updateField('motivation', e.target.value)}
-              placeholder="e.g. This program's focus on autonomous systems aligns perfectly with my research interests. I want to work with Prof. Weber's lab..."
+              placeholder={t.placeholderMotivation}
               rows={3}
               className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
             />
@@ -155,9 +164,9 @@ const Index = () => {
             className="w-full rounded-md bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <span className="animate-pulse-gentle">Writing your draft...</span>
+              <span className="animate-pulse-gentle">{t.generatingButton}</span>
             ) : (
-              'Generate Draft'
+              t.generateButton
             )}
           </button>
 
@@ -168,9 +177,7 @@ const Index = () => {
 
         {/* Footer */}
         <div className="mt-16 text-center">
-          <p className="text-xs text-muted-foreground">
-            DraftMe generates a starting point — always personalize before submitting.
-          </p>
+          <p className="text-xs text-muted-foreground">{t.footer}</p>
         </div>
       </div>
     </div>
