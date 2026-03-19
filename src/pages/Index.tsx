@@ -13,10 +13,9 @@ const Index = () => {
     achievement: '',
     motivation: '',
   });
-  const [draft, setDraft] = useState('');
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const updateField = <K extends keyof DraftFormData>(key: K, value: DraftFormData[K]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
