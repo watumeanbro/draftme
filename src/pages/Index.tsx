@@ -151,41 +151,6 @@ const Index = () => {
           )}
         </div>
 
-        {/* Output + Tips side by side */}
-        {draft && (
-          <div className="mt-10 flex flex-col lg:flex-row gap-8 animate-in fade-in duration-300">
-            {/* Draft */}
-            <div className="flex-1 min-w-0 rounded-lg border border-border bg-card p-6 relative">
-              <button
-                onClick={handleCopy}
-                className="absolute top-4 right-4 flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? 'Copied' : 'Copy'}
-              </button>
-              <div className="font-serif-output text-foreground leading-relaxed whitespace-pre-wrap pr-20 text-[15px]">
-                {draft}
-              </div>
-            </div>
-
-            {/* Tips sidebar */}
-            <div className="lg:w-64 shrink-0 space-y-5">
-              <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase opacity-60">
-                Tips to strengthen your application
-              </h2>
-              <div className="h-px bg-border" />
-              <div className="space-y-5">
-                {tips.map((tip, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <h3 className="text-sm font-medium text-foreground">{tip.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{tip.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Footer */}
         <div className="mt-16 text-center">
           <p className="text-xs text-muted-foreground">
