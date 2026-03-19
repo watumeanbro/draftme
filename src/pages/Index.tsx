@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DraftFormData, DocumentType, DOCUMENT_TYPE_LABELS } from '@/lib/draft-types';
+import { DraftFormData, DocumentType, Language, DOCUMENT_TYPE_LABELS, LANGUAGE_LABELS } from '@/lib/draft-types';
 import { supabase } from '@/integrations/supabase/client';
 import { FileText } from 'lucide-react';
 
@@ -8,6 +8,7 @@ const Index = () => {
   const [formData, setFormData] = useState<DraftFormData>({
     name: '',
     documentType: 'personal-statement',
+    language: 'english',
     university: '',
     background: '',
     achievement: '',
