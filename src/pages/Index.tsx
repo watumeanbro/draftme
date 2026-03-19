@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { DraftFormData, DocumentType, DOCUMENT_TYPE_LABELS, TIPS } from '@/lib/draft-types';
+import { useNavigate } from 'react-router-dom';
+import { DraftFormData, DocumentType, DOCUMENT_TYPE_LABELS } from '@/lib/draft-types';
 import { supabase } from '@/integrations/supabase/client';
-import { Copy, Check, FileText } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 const Index = () => {
   const [formData, setFormData] = useState<DraftFormData>({
@@ -12,10 +13,9 @@ const Index = () => {
     achievement: '',
     motivation: '',
   });
-  const [draft, setDraft] = useState('');
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const updateField = <K extends keyof DraftFormData>(key: K, value: DraftFormData[K]) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -24,7 +24,7 @@ const Index = () => {
   const handleGenerate = async () => {
     setLoading(true);
     setError('');
-    setDraft('');
+    
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('generate-draft', {
@@ -33,7 +33,7 @@ const Index = () => {
 
       if (fnError) throw new Error(fnError.message);
       if (data?.error) throw new Error(data.error);
-      setDraft(data.draft);
+      navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType } });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.');
     } finally {
@@ -41,14 +41,7 @@ const Index = () => {
     }
   };
 
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(draft);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const isFormValid = formData.name && formData.university && formData.background && formData.achievement && formData.motivation;
-  const tips = TIPS[formData.documentType];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -157,41 +150,6 @@ const Index = () => {
             <p className="text-sm text-destructive">{error}</p>
           )}
         </div>
-
-        {/* Output + Tips side by side */}
-        {draft && (
-          <div className="mt-10 flex flex-col lg:flex-row gap-8 animate-in fade-in duration-300">
-            {/* Draft */}
-            <div className="flex-1 min-w-0 rounded-lg border border-border bg-card p-6 relative">
-              <button
-                onClick={handleCopy}
-                className="absolute top-4 right-4 flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? 'Copied' : 'Copy'}
-              </button>
-              <div className="font-serif-output text-foreground leading-relaxed whitespace-pre-wrap pr-20 text-[15px]">
-                {draft}
-              </div>
-            </div>
-
-            {/* Tips sidebar */}
-            <div className="lg:w-64 shrink-0 space-y-5">
-              <h2 className="text-sm font-semibold text-foreground tracking-wide uppercase opacity-60">
-                Tips to strengthen your application
-              </h2>
-              <div className="h-px bg-border" />
-              <div className="space-y-5">
-                {tips.map((tip, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <h3 className="text-sm font-medium text-foreground">{tip.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{tip.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Footer */}
         <div className="mt-16 text-center">
