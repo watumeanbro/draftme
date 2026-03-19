@@ -86,6 +86,20 @@ const Index = () => {
             </select>
           </div>
 
+          {/* Language */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">Language</label>
+            <select
+              value={formData.language}
+              onChange={e => updateField('language', e.target.value as Language)}
+              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary appearance-none"
+            >
+              {Object.entries(LANGUAGE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
           {/* University */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">University or program</label>
