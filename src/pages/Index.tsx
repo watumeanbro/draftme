@@ -46,7 +46,7 @@ const Index = () => {
     }
   };
 
-  const isFormValid = formData.name && formData.university && formData.background && formData.achievement && formData.motivation;
+  const isFormValid = formData.name && formData.university && formData.fieldOfStudy && formData.background && formData.achievement && formData.motivation;
 
   const docTypeLabels: Record<DocumentType, string> = {
     'personal-statement': t.docTypePersonalStatement,
