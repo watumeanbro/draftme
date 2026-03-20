@@ -10,6 +10,7 @@ const Index = () => {
     name: '',
     documentType: 'personal-statement',
     language: 'english',
+    fieldOfStudy: '',
     university: '',
     background: '',
     achievement: '',
@@ -45,7 +46,7 @@ const Index = () => {
     }
   };
 
-  const isFormValid = formData.name && formData.university && formData.background && formData.achievement && formData.motivation;
+  const isFormValid = formData.name && formData.university && formData.fieldOfStudy && formData.background && formData.achievement && formData.motivation;
 
   const docTypeLabels: Record<DocumentType, string> = {
     'personal-statement': t.docTypePersonalStatement,
@@ -107,6 +108,18 @@ const Index = () => {
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
+          </div>
+
+          {/* Field of Study */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">{t.labelFieldOfStudy}</label>
+            <input
+              type="text"
+              value={formData.fieldOfStudy}
+              onChange={e => updateField('fieldOfStudy', e.target.value)}
+              placeholder={t.placeholderFieldOfStudy}
+              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            />
           </div>
 
           {/* University */}

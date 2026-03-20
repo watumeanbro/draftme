@@ -7,6 +7,8 @@ export type TranslationStrings = {
   labelName: string;
   placeholderName: string;
   labelDocType: string;
+  labelFieldOfStudy: string;
+  placeholderFieldOfStudy: string;
   labelUniversity: string;
   placeholderUniversity: string;
   labelBackground: string;
@@ -21,6 +23,8 @@ export type TranslationStrings = {
   backToForm: string;
   copy: string;
   copied: string;
+  downloadPdf: string;
+  downloadImage: string;
   tipsHeading: string;
   docTypePersonalStatement: string;
   docTypeScholarship: string;
@@ -40,8 +44,10 @@ export const translations: Record<Language, TranslationStrings> = {
     labelName: 'Your name',
     placeholderName: 'e.g. Maria Gonzalez',
     labelDocType: 'Document type',
-    labelUniversity: 'University or program',
-    placeholderUniversity: 'e.g. MSc Computer Science at TU Munich',
+    labelFieldOfStudy: 'Field of study',
+    placeholderFieldOfStudy: 'e.g. Medicine, Computer Science, Engineering',
+    labelUniversity: 'University or institution name',
+    placeholderUniversity: 'e.g. Harvard, Politecnico di Milano, UWC',
     labelBackground: 'Your background in 2–3 sentences',
     placeholderBackground: "e.g. I'm a final-year student in Electrical Engineering at the University of Lisbon...",
     labelAchievement: 'Your biggest achievement',
@@ -54,6 +60,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Back to form',
     copy: 'Copy',
     copied: 'Copied',
+    downloadPdf: 'Download PDF',
+    downloadImage: 'Download Image',
     tipsHeading: 'Tips to strengthen your application',
     docTypePersonalStatement: 'Personal Statement',
     docTypeScholarship: 'Scholarship Application',
@@ -83,8 +91,10 @@ export const translations: Record<Language, TranslationStrings> = {
     labelName: 'اسمك',
     placeholderName: 'مثال: ماريا غونزاليز',
     labelDocType: 'نوع المستند',
-    labelUniversity: 'الجامعة أو البرنامج',
-    placeholderUniversity: 'مثال: ماجستير علوم الحاسوب في جامعة ميونخ التقنية',
+    labelFieldOfStudy: 'مجال الدراسة',
+    placeholderFieldOfStudy: 'مثال: الطب، علوم الحاسوب، الهندسة',
+    labelUniversity: 'اسم الجامعة أو المؤسسة',
+    placeholderUniversity: 'مثال: هارفارد، بوليتكنيكو دي ميلانو',
     labelBackground: 'خلفيتك في ٢–٣ جمل',
     placeholderBackground: 'مثال: أنا طالب في السنة الأخيرة في الهندسة الكهربائية...',
     labelAchievement: 'أبرز إنجازاتك',
@@ -97,6 +107,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'العودة إلى النموذج',
     copy: 'نسخ',
     copied: 'تم النسخ',
+    downloadPdf: 'تحميل PDF',
+    downloadImage: 'تحميل صورة',
     tipsHeading: 'نصائح لتقوية طلبك',
     docTypePersonalStatement: 'بيان شخصي',
     docTypeScholarship: 'طلب منحة دراسية',
@@ -126,8 +138,10 @@ export const translations: Record<Language, TranslationStrings> = {
     labelName: 'Il tuo nome',
     placeholderName: 'es. Maria Gonzalez',
     labelDocType: 'Tipo di documento',
-    labelUniversity: 'Università o programma',
-    placeholderUniversity: 'es. MSc Informatica presso TU Munich',
+    labelFieldOfStudy: 'Campo di studio',
+    placeholderFieldOfStudy: 'es. Medicina, Informatica, Ingegneria',
+    labelUniversity: "Nome dell'università o istituzione",
+    placeholderUniversity: 'es. Harvard, Politecnico di Milano, UWC',
     labelBackground: 'Il tuo background in 2–3 frasi',
     placeholderBackground: "es. Sono uno studente dell'ultimo anno in Ingegneria Elettrica...",
     labelAchievement: 'Il tuo più grande traguardo',
@@ -140,6 +154,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Torna al modulo',
     copy: 'Copia',
     copied: 'Copiato',
+    downloadPdf: 'Scarica PDF',
+    downloadImage: 'Scarica Immagine',
     tipsHeading: 'Consigli per rafforzare la tua candidatura',
     docTypePersonalStatement: 'Dichiarazione Personale',
     docTypeScholarship: 'Domanda di Borsa di Studio',
@@ -169,8 +185,10 @@ export const translations: Record<Language, TranslationStrings> = {
     labelName: 'Votre nom',
     placeholderName: 'ex. Maria Gonzalez',
     labelDocType: 'Type de document',
-    labelUniversity: 'Université ou programme',
-    placeholderUniversity: "ex. MSc Informatique à TU Munich",
+    labelFieldOfStudy: "Domaine d'études",
+    placeholderFieldOfStudy: 'ex. Médecine, Informatique, Ingénierie',
+    labelUniversity: "Nom de l'université ou institution",
+    placeholderUniversity: 'ex. Harvard, Politecnico di Milano, UWC',
     labelBackground: 'Votre parcours en 2–3 phrases',
     placeholderBackground: "ex. Je suis étudiant en dernière année en Génie Électrique...",
     labelAchievement: 'Votre plus grande réussite',
@@ -183,6 +201,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Retour au formulaire',
     copy: 'Copier',
     copied: 'Copié',
+    downloadPdf: 'Télécharger PDF',
+    downloadImage: 'Télécharger Image',
     tipsHeading: 'Conseils pour renforcer votre candidature',
     docTypePersonalStatement: 'Déclaration Personnelle',
     docTypeScholarship: 'Demande de Bourse',
