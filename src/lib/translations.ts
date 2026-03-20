@@ -7,6 +7,8 @@ export type TranslationStrings = {
   labelName: string;
   placeholderName: string;
   labelDocType: string;
+  labelFieldOfStudy: string;
+  placeholderFieldOfStudy: string;
   labelUniversity: string;
   placeholderUniversity: string;
   labelBackground: string;
@@ -21,6 +23,8 @@ export type TranslationStrings = {
   backToForm: string;
   copy: string;
   copied: string;
+  downloadPdf: string;
+  downloadImage: string;
   tipsHeading: string;
   docTypePersonalStatement: string;
   docTypeScholarship: string;
