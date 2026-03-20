@@ -78,7 +78,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   arabic: {
     appName: 'DraftMe',
-    appTagline: 'أنشئ مسودة أولى لطلبك في ثوانٍ.',
+    appTagline: 'أخبرنا عن نفسك، اختر نوع المستند، واحصل على مسودة كاملة في ثوانٍ. لا صفحة فارغة، لا توتر.',
+    generateHint: 'ستكون مسودتك حوالي ٣٥٠ كلمة — نقطة انطلاق قوية لتجعلها خاصة بك.',
     labelName: 'اسمك',
     placeholderName: 'مثال: ماريا غونزاليز',
     labelDocType: 'نوع المستند',
