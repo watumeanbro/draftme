@@ -154,6 +154,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Torna al modulo',
     copy: 'Copia',
     copied: 'Copiato',
+    downloadPdf: 'Scarica PDF',
+    downloadImage: 'Scarica Immagine',
     tipsHeading: 'Consigli per rafforzare la tua candidatura',
     docTypePersonalStatement: 'Dichiarazione Personale',
     docTypeScholarship: 'Domanda di Borsa di Studio',
