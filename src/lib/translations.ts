@@ -3,6 +3,7 @@ import { Language } from './draft-types';
 export type TranslationStrings = {
   appName: string;
   appTagline: string;
+  generateHint: string;
   labelName: string;
   placeholderName: string;
   labelDocType: string;
@@ -34,7 +35,8 @@ export type TranslationStrings = {
 export const translations: Record<Language, TranslationStrings> = {
   english: {
     appName: 'DraftMe',
-    appTagline: 'Generate a first draft for your application in seconds.',
+    appTagline: 'Tell us about yourself, pick your document type, and get a full draft in seconds. No blank page, no stress.',
+    generateHint: 'Your draft will be around 350 words — a strong starting point to make your own.',
     labelName: 'Your name',
     placeholderName: 'e.g. Maria Gonzalez',
     labelDocType: 'Document type',
@@ -76,7 +78,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   arabic: {
     appName: 'DraftMe',
-    appTagline: 'أنشئ مسودة أولى لطلبك في ثوانٍ.',
+    appTagline: 'أخبرنا عن نفسك، اختر نوع المستند، واحصل على مسودة كاملة في ثوانٍ. لا صفحة فارغة، لا توتر.',
+    generateHint: 'ستكون مسودتك حوالي ٣٥٠ كلمة — نقطة انطلاق قوية لتجعلها خاصة بك.',
     labelName: 'اسمك',
     placeholderName: 'مثال: ماريا غونزاليز',
     labelDocType: 'نوع المستند',
@@ -118,7 +121,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   italian: {
     appName: 'DraftMe',
-    appTagline: 'Genera una prima bozza della tua candidatura in pochi secondi.',
+    appTagline: 'Parlaci di te, scegli il tipo di documento e ottieni una bozza completa in pochi secondi. Nessuna pagina vuota, nessuno stress.',
+    generateHint: 'La tua bozza sarà di circa 350 parole — un ottimo punto di partenza da personalizzare.',
     labelName: 'Il tuo nome',
     placeholderName: 'es. Maria Gonzalez',
     labelDocType: 'Tipo di documento',
@@ -160,7 +164,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   french: {
     appName: 'DraftMe',
-    appTagline: 'Générez un premier brouillon de votre candidature en quelques secondes.',
+    appTagline: 'Parlez-nous de vous, choisissez votre type de document et obtenez un brouillon complet en quelques secondes. Pas de page blanche, pas de stress.',
+    generateHint: 'Votre brouillon fera environ 350 mots — un excellent point de départ à personnaliser.',
     labelName: 'Votre nom',
     placeholderName: 'ex. Maria Gonzalez',
     labelDocType: 'Type de document',

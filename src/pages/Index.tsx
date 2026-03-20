@@ -157,6 +157,9 @@ const Index = () => {
             />
           </div>
 
+          {/* Generate Hint */}
+          <p className="text-xs text-muted-foreground text-center">{t.generateHint}</p>
+
           {/* Generate Button */}
           <button
             onClick={handleGenerate}
