@@ -10,6 +10,7 @@ const Index = () => {
     name: '',
     documentType: 'personal-statement',
     language: 'english',
+    fieldOfStudy: '',
     university: '',
     background: '',
     achievement: '',
