@@ -3,7 +3,6 @@ import { ArrowLeft, ArrowRight, Copy, Check, Download, ChevronDown } from 'lucid
 import { useState, useRef } from 'react';
 import { DocumentType, Language } from '@/lib/draft-types';
 import { translations } from '@/lib/translations';
-import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const Draft = () => {
@@ -31,20 +30,90 @@ const Draft = () => {
 
   const handleDownloadPdf = async () => {
     setDownloadOpen(false);
-    if (!draftRef.current) return;
-    const canvas = await html2canvas(draftRef.current, { scale: 2, backgroundColor: '#1a1a1a' });
-    const imgData = canvas.toDataURL('image/png');
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 20;
+    const maxWidth = pageWidth - margin * 2;
+    const lineHeight = 7;
+    const fontSize = 12;
+
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(fontSize);
+    pdf.setTextColor(0, 0, 0);
+
+    const lines = pdf.splitTextToSize(draft, maxWidth);
+    let y = margin;
+
+    for (let i = 0; i < lines.length; i++) {
+      if (y + lineHeight > pageHeight - margin) {
+        pdf.addPage();
+        y = margin;
+      }
+      pdf.text(lines[i], margin, y);
+      y += lineHeight;
+    }
+
     pdf.save('draft.pdf');
   };
 
   const handleDownloadImage = async () => {
     setDownloadOpen(false);
-    if (!draftRef.current) return;
-    const canvas = await html2canvas(draftRef.current, { scale: 2, backgroundColor: '#1a1a1a' });
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const padding = 60;
+    const fontSize = 28;
+    const lineHeight = 42;
+    const maxWidth = 1000;
+
+    ctx.font = `${fontSize}px Georgia, serif`;
+
+    // Split by newlines first, then wrap each line
+    const paragraphs = draft.split('\n');
+    const finalLines: string[] = [];
+    for (const para of paragraphs) {
+      if (para.trim() === '') {
+        finalLines.push('');
+        continue;
+      }
+      const words = para.split(' ');
+      let currentLine = '';
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth) {
+          if (currentLine) finalLines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) finalLines.push(currentLine);
+    }
+
+    const canvasWidth = maxWidth + padding * 2;
+    const canvasHeight = finalLines.length * lineHeight + padding * 2;
+
+    canvas.width = canvasWidth * 2;
+    canvas.height = canvasHeight * 2;
+    ctx.scale(2, 2);
+
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Black text
+    ctx.fillStyle = '#000000';
+    ctx.font = `${fontSize}px Georgia, serif`;
+    ctx.textAlign = 'left';
+
+    let y = padding + fontSize;
+    for (const line of finalLines) {
+      ctx.fillText(line, padding, y);
+      y += lineHeight;
+    }
+
     const link = document.createElement('a');
     link.download = 'draft.png';
     link.href = canvas.toDataURL('image/png');
@@ -59,7 +128,6 @@ const Draft = () => {
   return (
     <div className="min-h-screen bg-background text-foreground" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="mx-auto max-w-4xl px-5 py-10">
-        {/* Back button */}
         <button
           onClick={() => navigate('/')}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
@@ -68,12 +136,10 @@ const Draft = () => {
           {t.backToForm}
         </button>
 
-        {/* Draft + Tips side by side */}
         <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in duration-300">
-          {/* Draft */}
-          <div className="flex-1 min-w-0 rounded-lg border border-border bg-card p-6 relative">
-            {/* Action buttons */}
-            <div className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} flex items-center gap-2`}>
+          <div className="flex-1 min-w-0 rounded-lg border border-border bg-card p-6">
+            {/* Action buttons above text */}
+            <div className={`flex items-center gap-2 mb-4 ${isRTL ? 'justify-start' : 'justify-end'}`}>
               <button
                 onClick={handleCopy}
                 className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -82,7 +148,6 @@ const Draft = () => {
                 {copied ? t.copied : t.copy}
               </button>
 
-              {/* Download dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setDownloadOpen(!downloadOpen)}
@@ -113,9 +178,11 @@ const Draft = () => {
               </div>
             </div>
 
+            <div className="h-px bg-border mb-4" />
+
             <div
               ref={draftRef}
-              className={`font-serif-output text-foreground leading-relaxed whitespace-pre-wrap ${isRTL ? 'pl-24' : 'pr-24'} text-[15px]`}
+              className="font-serif-output text-foreground leading-relaxed whitespace-pre-wrap text-[15px]"
             >
               {draft}
             </div>
