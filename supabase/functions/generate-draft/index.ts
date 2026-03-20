@@ -17,9 +17,9 @@ serve(async (req) => {
   }
 
   try {
-    const { name, documentType, language, university, background, achievement, motivation } = await req.json();
+    const { name, documentType, language, fieldOfStudy, university, background, achievement, motivation } = await req.json();
 
-    if (!name || !documentType || !university || !background || !achievement || !motivation) {
+    if (!name || !documentType || !university || !fieldOfStudy || !background || !achievement || !motivation) {
       return new Response(JSON.stringify({ error: "All fields are required." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
