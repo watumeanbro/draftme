@@ -107,6 +107,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'العودة إلى النموذج',
     copy: 'نسخ',
     copied: 'تم النسخ',
+    downloadPdf: 'تحميل PDF',
+    downloadImage: 'تحميل صورة',
     tipsHeading: 'نصائح لتقوية طلبك',
     docTypePersonalStatement: 'بيان شخصي',
     docTypeScholarship: 'طلب منحة دراسية',
