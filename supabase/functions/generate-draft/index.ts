@@ -34,7 +34,7 @@ serve(async (req) => {
 
     const systemPrompt = `You are a skilled academic writing coach. You write in a natural, personal, and authentic tone — never robotic or formulaic. You avoid clichés like "I am passionate about" or "Since I was a child." Your writing sounds like a thoughtful student, not an AI. You produce exactly one draft with no preamble, no commentary, and no sign-off — just the body text. You write in ${langName}.`;
 
-    const userPrompt = `Write a ${docName} in ${langName} for ${name}, who is applying to ${university}.
+    const userPrompt = `Write a ${docName} in ${langName} for ${name}, who is applying to ${university} to study ${fieldOfStudy}.
 
 Background: ${background}
 
