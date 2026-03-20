@@ -35,7 +35,8 @@ export type TranslationStrings = {
 export const translations: Record<Language, TranslationStrings> = {
   english: {
     appName: 'DraftMe',
-    appTagline: 'Generate a first draft for your application in seconds.',
+    appTagline: 'Tell us about yourself, pick your document type, and get a full draft in seconds. No blank page, no stress.',
+    generateHint: 'Your draft will be around 350 words — a strong starting point to make your own.',
     labelName: 'Your name',
     placeholderName: 'e.g. Maria Gonzalez',
     labelDocType: 'Document type',
