@@ -164,7 +164,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   french: {
     appName: 'DraftMe',
-    appTagline: 'Générez un premier brouillon de votre candidature en quelques secondes.',
+    appTagline: 'Parlez-nous de vous, choisissez votre type de document et obtenez un brouillon complet en quelques secondes. Pas de page blanche, pas de stress.',
+    generateHint: 'Votre brouillon fera environ 350 mots — un excellent point de départ à personnaliser.',
     labelName: 'Votre nom',
     placeholderName: 'ex. Maria Gonzalez',
     labelDocType: 'Type de document',
