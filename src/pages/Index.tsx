@@ -110,6 +110,18 @@ const Index = () => {
             </select>
           </div>
 
+          {/* Field of Study */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground">{t.labelFieldOfStudy}</label>
+            <input
+              type="text"
+              value={formData.fieldOfStudy}
+              onChange={e => updateField('fieldOfStudy', e.target.value)}
+              placeholder={t.placeholderFieldOfStudy}
+              className="w-full rounded-md border border-border bg-card px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
           {/* University */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">{t.labelUniversity}</label>
