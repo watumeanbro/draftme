@@ -121,7 +121,8 @@ export const translations: Record<Language, TranslationStrings> = {
   },
   italian: {
     appName: 'DraftMe',
-    appTagline: 'Genera una prima bozza della tua candidatura in pochi secondi.',
+    appTagline: 'Parlaci di te, scegli il tipo di documento e ottieni una bozza completa in pochi secondi. Nessuna pagina vuota, nessuno stress.',
+    generateHint: 'La tua bozza sarà di circa 350 parole — un ottimo punto di partenza da personalizzare.',
     labelName: 'Il tuo nome',
     placeholderName: 'es. Maria Gonzalez',
     labelDocType: 'Tipo di documento',
