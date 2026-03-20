@@ -201,6 +201,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Retour au formulaire',
     copy: 'Copier',
     copied: 'Copié',
+    downloadPdf: 'Télécharger PDF',
+    downloadImage: 'Télécharger Image',
     tipsHeading: 'Conseils pour renforcer votre candidature',
     docTypePersonalStatement: 'Déclaration Personnelle',
     docTypeScholarship: 'Demande de Bourse',

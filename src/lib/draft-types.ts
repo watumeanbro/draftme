@@ -5,6 +5,7 @@ export interface DraftFormData {
   name: string;
   documentType: DocumentType;
   language: Language;
+  fieldOfStudy: string;
   university: string;
   background: string;
   achievement: string;
