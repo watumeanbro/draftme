@@ -3,6 +3,7 @@ import { Language } from './draft-types';
 export type TranslationStrings = {
   appName: string;
   appTagline: string;
+  generateHint: string;
   labelName: string;
   placeholderName: string;
   labelDocType: string;
