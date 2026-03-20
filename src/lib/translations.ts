@@ -60,6 +60,8 @@ export const translations: Record<Language, TranslationStrings> = {
     backToForm: 'Back to form',
     copy: 'Copy',
     copied: 'Copied',
+    downloadPdf: 'Download PDF',
+    downloadImage: 'Download Image',
     tipsHeading: 'Tips to strengthen your application',
     docTypePersonalStatement: 'Personal Statement',
     docTypeScholarship: 'Scholarship Application',
