@@ -1,5 +1,9 @@
 import express from "express";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
@@ -81,6 +85,14 @@ Write 300–400 words. Use first person. Make it specific and personal. Do not i
       .json({ error: e?.message || "AI generation failed" });
   }
 });
+
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.resolve(__dirname, "../dist");
+  app.use(express.static(distPath));
+  app.get("*", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 const PORT = parseInt(process.env.PORT || "3001", 10);
 app.listen(PORT, "0.0.0.0", () => {
