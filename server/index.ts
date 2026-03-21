@@ -38,7 +38,7 @@ app.post("/api/generate-draft", async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
   if (!apiKey) {
     return res
       .status(500)
