@@ -2,11 +2,16 @@ import express from "express";
 import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
+import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth/index.js";
+import { authStorage } from "./replit_integrations/auth/storage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
+
+await setupAuth(app);
+registerAuthRoutes(app);
 
 const DOCUMENT_TYPE_NAMES: Record<string, string> = {
   "personal-statement": "personal statement",
@@ -14,7 +19,25 @@ const DOCUMENT_TYPE_NAMES: Record<string, string> = {
   erasmus: "Erasmus motivation letter",
 };
 
-app.post("/api/generate-draft", async (req, res) => {
+app.get("/api/me", isAuthenticated, async (req: any, res) => {
+  try {
+    const userId = req.user.claims.sub;
+    const user = await authStorage.getUser(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, profileImageUrl: user.profileImageUrl, credits: user.credits });
+  } catch (e) {
+    res.status(500).json({ message: "Failed to fetch user" });
+  }
+});
+
+app.post("/api/generate-draft", isAuthenticated, async (req: any, res) => {
+  const userId = req.user.claims.sub;
+
+  const credits = await authStorage.getCredits(userId);
+  if (credits <= 0) {
+    return res.status(403).json({ error: "no_credits" });
+  }
+
   const {
     name,
     documentType,
@@ -26,23 +49,13 @@ app.post("/api/generate-draft", async (req, res) => {
     motivation,
   } = req.body;
 
-  if (
-    !name ||
-    !documentType ||
-    !university ||
-    !fieldOfStudy ||
-    !background ||
-    !achievement ||
-    !motivation
-  ) {
+  if (!name || !documentType || !university || !fieldOfStudy || !background || !achievement || !motivation) {
     return res.status(400).json({ error: "All fields are required." });
   }
 
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
-    return res
-      .status(500)
-      .json({ error: "GROQ_API_KEY is not configured on the server." });
+    return res.status(500).json({ error: "GROQ_API_KEY is not configured on the server." });
   }
 
   const docName = DOCUMENT_TYPE_NAMES[documentType] || "application letter";
@@ -77,17 +90,15 @@ Write 300–400 words. Use first person. Make it specific and personal. Do not i
     const draft = completion.choices[0]?.message?.content?.trim();
     if (!draft) throw new Error("No content generated");
 
-    return res.json({ draft });
+    const remainingCredits = await authStorage.deductCredit(userId);
+
+    return res.json({ draft, creditsRemaining: remainingCredits });
   } catch (e: any) {
     console.error("generate-draft error:", e);
     if (e?.status === 429) {
-      return res.status(429).json({
-        error: "Too many requests. Please wait a moment and try again.",
-      });
+      return res.status(429).json({ error: "Too many requests. Please wait a moment and try again." });
     }
-    return res
-      .status(500)
-      .json({ error: e?.message || "AI generation failed" });
+    return res.status(500).json({ error: e?.message || "AI generation failed" });
   }
 });
 
