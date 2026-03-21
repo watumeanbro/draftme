@@ -1,5 +1,5 @@
 import express from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -38,11 +38,11 @@ app.post("/api/generate-draft", async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return res
       .status(500)
-      .json({ error: "Google API key is not configured on the server." });
+      .json({ error: "GROQ_API_KEY is not configured on the server." });
   }
 
   const docName = DOCUMENT_TYPE_NAMES[documentType] || "application letter";
@@ -61,15 +61,20 @@ Why they want this opportunity: ${motivation}
 Write 300–400 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs. Write entirely in ${langName}.`;
 
   try {
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      systemInstruction: systemPrompt,
+    const groq = new OpenAI({
+      apiKey,
+      baseURL: "https://api.groq.com/openai/v1",
     });
 
-    const result = await model.generateContent(userPrompt);
-    const draft = result.response.text().trim();
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+    });
 
+    const draft = completion.choices[0]?.message?.content?.trim();
     if (!draft) throw new Error("No content generated");
 
     return res.json({ draft });
