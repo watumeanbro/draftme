@@ -89,7 +89,7 @@ Write 300–400 words. Use first person. Make it specific and personal. Do not i
 if (process.env.NODE_ENV === "production") {
   const distPath = path.resolve(__dirname, "../dist");
   app.use(express.static(distPath));
-  app.get("*", (_req, res) => {
+  app.get("*splat", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
