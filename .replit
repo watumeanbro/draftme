@@ -52,3 +52,7 @@ externalPort = 3002
 [userenv.shared]
 GEMINI_API_KEY = "AIzaSyDdpVAswboNs3h7z-vhqSKUs1GfkeFJM30"
 GROQ_API_KEY = "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"
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
