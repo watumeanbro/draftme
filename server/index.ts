@@ -1,5 +1,5 @@
 import express from "express";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const app = express();
 app.use(express.json());
@@ -34,14 +34,12 @@ app.post("/api/generate-draft", async (req, res) => {
     return res.status(400).json({ error: "All fields are required." });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res
       .status(500)
-      .json({ error: "OPENAI_API_KEY is not configured on the server." });
+      .json({ error: "GEMINI_API_KEY is not configured on the server." });
   }
-
-  const openai = new OpenAI({ apiKey });
 
   const docName = DOCUMENT_TYPE_NAMES[documentType] || "application letter";
   const langName = language || "English";
@@ -59,26 +57,24 @@ Why they want this opportunity: ${motivation}
 Write 300–400 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs. Write entirely in ${langName}.`;
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: systemPrompt,
     });
 
-    const draft = completion.choices[0]?.message?.content?.trim();
+    const result = await model.generateContent(userPrompt);
+    const draft = result.response.text().trim();
+
     if (!draft) throw new Error("No content generated");
 
     return res.json({ draft });
   } catch (e: any) {
     console.error("generate-draft error:", e);
     if (e?.status === 429) {
-      return res
-        .status(429)
-        .json({
-          error: "Too many requests. Please wait a moment and try again.",
-        });
+      return res.status(429).json({
+        error: "Too many requests. Please wait a moment and try again.",
+      });
     }
     return res
       .status(500)
