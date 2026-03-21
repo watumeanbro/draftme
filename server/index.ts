@@ -1,8 +1,8 @@
-import express from "express";
+import express, { type RequestHandler } from "express";
 import OpenAI from "openai";
 import path from "path";
 import { fileURLToPath } from "url";
-import { setupAuth, isAuthenticated, registerAuthRoutes } from "./replit_integrations/auth/index.js";
+import { supabaseAdmin } from "./supabase.js";
 import { authStorage } from "./replit_integrations/auth/storage.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -10,8 +10,46 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
 
-await setupAuth(app);
-registerAuthRoutes(app);
+const isAuthenticated: RequestHandler = async (req: any, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const token = authHeader.split(" ")[1];
+  const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  req.supabaseUser = user;
+  next();
+};
+
+app.get("/api/me", isAuthenticated, async (req: any, res) => {
+  try {
+    const supaUser = req.supabaseUser;
+    const meta = supaUser.user_metadata ?? {};
+    await authStorage.upsertUser({
+      id: supaUser.id,
+      email: supaUser.email ?? null,
+      firstName: meta.full_name?.split(" ")[0] ?? meta.given_name ?? meta.name?.split(" ")[0] ?? null,
+      lastName: meta.full_name?.split(" ").slice(1).join(" ") ?? meta.family_name ?? null,
+      profileImageUrl: meta.avatar_url ?? meta.picture ?? null,
+    });
+    const user = await authStorage.getUser(supaUser.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      profileImageUrl: user.profileImageUrl,
+      credits: user.credits,
+    });
+  } catch (e) {
+    console.error("Error in /api/me:", e);
+    res.status(500).json({ message: "Failed to fetch user" });
+  }
+});
 
 const DOCUMENT_TYPE_NAMES: Record<string, string> = {
   "personal-statement": "personal statement",
@@ -19,35 +57,16 @@ const DOCUMENT_TYPE_NAMES: Record<string, string> = {
   erasmus: "Erasmus motivation letter",
 };
 
-app.get("/api/me", isAuthenticated, async (req: any, res) => {
-  try {
-    const userId = req.user.claims.sub;
-    const user = await authStorage.getUser(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, profileImageUrl: user.profileImageUrl, credits: user.credits });
-  } catch (e) {
-    res.status(500).json({ message: "Failed to fetch user" });
-  }
-});
-
 app.post("/api/generate-draft", isAuthenticated, async (req: any, res) => {
-  const userId = req.user.claims.sub;
+  const supaUser = req.supabaseUser;
+  const userId = supaUser.id;
 
   const credits = await authStorage.getCredits(userId);
   if (credits <= 0) {
     return res.status(403).json({ error: "no_credits" });
   }
 
-  const {
-    name,
-    documentType,
-    language,
-    fieldOfStudy,
-    university,
-    background,
-    achievement,
-    motivation,
-  } = req.body;
+  const { name, documentType, language, fieldOfStudy, university, background, achievement, motivation } = req.body;
 
   if (!name || !documentType || !university || !fieldOfStudy || !background || !achievement || !motivation) {
     return res.status(400).json({ error: "All fields are required." });

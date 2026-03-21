@@ -52,6 +52,10 @@ externalPort = 3002
 [userenv.shared]
 GEMINI_API_KEY = "AIzaSyDdpVAswboNs3h7z-vhqSKUs1GfkeFJM30"
 GROQ_API_KEY = "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"
+VITE_SUPABASE_URL = "https://yaxiemddiyinfubpvesr.supabase.co"
+VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlheGllbWRkaXlpbmZ1YnB2ZXNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MjA1OTUsImV4cCI6MjA4OTA5NjU5NX0.CSGDpS_VLL1t-t6K3kmS3yGvRTFqvbjzy83zGOdNj8w"
+SUPABASE_URL = "https://yaxiemddiyinfubpvesr.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlheGllbWRkaXlpbmZ1YnB2ZXNyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzUyMDU5NSwiZXhwIjoyMDg5MDk2NTk1fQ.qQJRZtxdBrhrxzMC3vLrVbkkTjU4NObUirKEpoNW-K0"
 
 [postMerge]
 path = "scripts/post-merge.sh"

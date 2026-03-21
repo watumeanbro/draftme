@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { DraftFormData, DocumentType, Language, LANGUAGE_LABELS } from '@/lib/draft-types';
 import { translations } from '@/lib/translations';
 import { FileText, Globe, LogIn, LogOut, Coins } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
 
 const Index = () => {
   const [formData, setFormData] = useState<DraftFormData>({
@@ -20,8 +20,7 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { user, isLoading: authLoading, refetch } = useAuth();
-  const queryClient = useQueryClient();
+  const { user, isLoading: authLoading, isAuthenticated, session, refreshCredits } = useAuth();
 
   const t = translations[formData.language];
   const isRTL = formData.language === 'arabic';
@@ -30,9 +29,13 @@ const Index = () => {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   const handleGenerate = async () => {
-    if (!user) {
-      window.location.href = '/api/login';
+    if (!isAuthenticated || !session) {
+      navigate('/signup');
       return;
     }
     setLoading(true);
@@ -41,18 +44,19 @@ const Index = () => {
     try {
       const res = await fetch('/api/generate-draft', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
       if (res.status === 403 && data.error === 'no_credits') {
-        setError('');
-        queryClient.invalidateQueries({ queryKey: ['/api/me'] });
+        refreshCredits();
         return;
       }
       if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
-      queryClient.invalidateQueries({ queryKey: ['/api/me'] });
+      await refreshCredits();
       navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType, language: formData.language } });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.');
@@ -62,7 +66,7 @@ const Index = () => {
   };
 
   const isFormValid = formData.name && formData.university && formData.fieldOfStudy && formData.background && formData.achievement && formData.motivation;
-  const hasNoCredits = user !== undefined && user !== null && user.credits <= 0;
+  const hasNoCredits = user !== null && user !== undefined && user.credits <= 0;
   const isButtonDisabled = !isFormValid || loading || hasNoCredits;
 
   const docTypeLabels: Record<DocumentType, string> = {
@@ -132,24 +136,24 @@ const Index = () => {
                     </div>
                   )}
 
-                  <a
-                    href="/api/logout"
+                  <button
+                    onClick={handleSignOut}
                     className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    data-testid="link-logout"
+                    data-testid="button-signout"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Sign out</span>
-                  </a>
+                  </button>
                 </>
               ) : (
-                <a
-                  href="/api/login"
+                <Link
+                  to="/signup"
                   className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 transition-opacity"
-                  data-testid="link-login"
+                  data-testid="link-signup"
                 >
                   <LogIn className="h-3.5 w-3.5" />
                   Sign in
-                </a>
+                </Link>
               )}
             </div>
           )}
@@ -167,14 +171,14 @@ const Index = () => {
         {/* No-credits banner */}
         {hasNoCredits && (
           <div className="mb-6 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive" data-testid="banner-no-credits">
-            You've used all your free credits. Sign up for more — or check back later.
+            You've used all your free credits.
           </div>
         )}
 
         {/* Not-signed-in nudge */}
         {!authLoading && !user && (
           <div className="mb-6 rounded-md border border-border bg-card px-4 py-3 text-sm text-muted-foreground" data-testid="banner-sign-in">
-            <a href="/api/login" className="text-primary underline underline-offset-2 hover:opacity-80">Sign in</a> to generate your draft. New users get <strong className="text-foreground">3 free credits</strong>.
+            <Link to="/signup" className="text-primary underline underline-offset-2 hover:opacity-80">Sign up</Link> to generate your draft. New users get <strong className="text-foreground">3 free credits</strong>.
           </div>
         )}
 
@@ -288,7 +292,7 @@ const Index = () => {
             ) : hasNoCredits ? (
               'No credits remaining'
             ) : !user && !authLoading ? (
-              'Sign in to generate'
+              'Sign up to generate'
             ) : (
               t.generateButton
             )}

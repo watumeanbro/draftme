@@ -1,6 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   email: string | null;
   firstName: string | null;
@@ -9,25 +12,61 @@ interface AuthUser {
   credits: number;
 }
 
-async function fetchMe(): Promise<AuthUser | null> {
-  const res = await fetch("/api/me", { credentials: "include" });
-  if (res.status === 401) return null;
-  if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
-  return res.json();
-}
-
 export function useAuth() {
-  const { data: user, isLoading, refetch } = useQuery<AuthUser | null>({
-    queryKey: ["/api/me"],
-    queryFn: fetchMe,
-    retry: false,
-    staleTime: 1000 * 30,
-  });
+  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) fetchProfile(session);
+      else setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) fetchProfile(session);
+      else {
+        setUser(null);
+        setIsLoading(false);
+        queryClient.invalidateQueries({ queryKey: ["/api/me"] });
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  async function fetchProfile(session: Session) {
+    try {
+      const res = await fetch("/api/me", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function refreshCredits() {
+    if (!session) return;
+    await fetchProfile(session);
+  }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+  }
 
   return {
+    session,
     user,
     isLoading,
-    isAuthenticated: !!user,
-    refetch,
+    isAuthenticated: !!session,
+    refreshCredits,
+    signOut,
   };
 }
