@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DraftFormData, DocumentType, Language, LANGUAGE_LABELS } from '@/lib/draft-types';
 import { translations } from '@/lib/translations';
-import { supabase } from '@/integrations/supabase/client';
 import { FileText, Globe } from 'lucide-react';
 
 const Index = () => {
@@ -32,12 +31,13 @@ const Index = () => {
     setError('');
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('generate-draft', {
-        body: formData,
+      const res = await fetch('/api/generate-draft', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
-
-      if (fnError) throw new Error(fnError.message);
-      if (data?.error) throw new Error(data.error);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
       navigate('/draft', { state: { draft: data.draft, documentType: formData.documentType, language: formData.language } });
     } catch (e: any) {
       setError(e.message || 'Something went wrong. Please try again.');
