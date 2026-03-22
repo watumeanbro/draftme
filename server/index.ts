@@ -121,6 +121,19 @@ Write 300–400 words. Use first person. Make it specific and personal. Do not i
   }
 });
 
+app.delete("/api/delete-account", isAuthenticated, async (req: any, res) => {
+  const userId = req.supabaseUser.id;
+  try {
+    await authStorage.deleteUser(userId);
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (e: any) {
+    console.error("delete-account error:", e);
+    res.status(500).json({ error: e?.message || "Failed to delete account" });
+  }
+});
+
 if (process.env.NODE_ENV === "production") {
   const distPath = path.resolve(__dirname, "../dist");
   app.use(express.static(distPath));

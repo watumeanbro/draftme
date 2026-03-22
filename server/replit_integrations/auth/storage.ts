@@ -7,6 +7,7 @@ export interface IAuthStorage {
   upsertUser(user: UpsertUser): Promise<User>;
   getCredits(id: string): Promise<number>;
   deductCredit(id: string): Promise<number>;
+  deleteUser(id: string): Promise<void>;
 }
 
 class AuthStorage implements IAuthStorage {
@@ -48,6 +49,10 @@ class AuthStorage implements IAuthStorage {
       .where(eq(users.id, id))
       .returning({ credits: users.credits });
     return updated?.credits ?? 0;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 }
 
