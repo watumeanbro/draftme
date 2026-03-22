@@ -27,17 +27,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
-      <div className="absolute top-6 left-6">
+      <div className="w-full max-w-sm">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
           data-testid="button-back"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
         </button>
-      </div>
-      <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 justify-center mb-8">
           <FileText className="h-5 w-5 text-primary" />
           <span className="text-lg font-semibold tracking-tight">DraftMe</span>
