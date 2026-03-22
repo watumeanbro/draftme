@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FileText } from "lucide-react";
+import { FileText, ArrowLeft } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const Login = () => {
@@ -27,6 +27,16 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+      <div className="absolute top-6 left-6">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          data-testid="button-back"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+      </div>
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 justify-center mb-8">
           <FileText className="h-5 w-5 text-primary" />
