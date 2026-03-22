@@ -24,10 +24,57 @@ const isAuthenticated: RequestHandler = async (req: any, res, next) => {
   next();
 };
 
+async function sendWelcomeEmail(email: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("RESEND_API_KEY not set — skipping welcome email");
+    return;
+  }
+  const body = [
+    "Hey!",
+    "",
+    "Welcome to DraftMe — we're glad you're here.",
+    "",
+    "You have 3 free credits waiting for you. Use them to write your personal statement, scholarship application, or Erasmus motivation letter in seconds. No blank page, no stress.",
+    "",
+    "👉 Start here: https://draftme.online",
+    "",
+    "We built DraftMe to solve a real problem, and we're still improving it every day. If something didn't work the way you expected, or if there's something you wish it could do — we genuinely want to know.",
+    "",
+    "Just hit reply and tell us. We read every message.",
+    "",
+    "— Malak, founder of DraftMe",
+  ].join("\n");
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "welcome@mail.draftme.online",
+      to: [email],
+      subject: "Welcome to DraftMe 🎉",
+      text: body,
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    console.error("Resend welcome email failed:", err);
+  } else {
+    console.log("Welcome email sent to", email);
+  }
+}
+
 app.get("/api/me", isAuthenticated, async (req: any, res) => {
   try {
     const supaUser = req.supabaseUser;
     const meta = supaUser.user_metadata ?? {};
+
+    const isNewUser = !(await authStorage.getUser(supaUser.id));
+
     await authStorage.upsertUser({
       id: supaUser.id,
       email: supaUser.email ?? null,
@@ -35,6 +82,13 @@ app.get("/api/me", isAuthenticated, async (req: any, res) => {
       lastName: meta.full_name?.split(" ").slice(1).join(" ") ?? meta.family_name ?? null,
       profileImageUrl: meta.avatar_url ?? meta.picture ?? null,
     });
+
+    if (isNewUser && supaUser.email) {
+      sendWelcomeEmail(supaUser.email).catch(e =>
+        console.error("Welcome email error:", e)
+      );
+    }
+
     const user = await authStorage.getUser(supaUser.id);
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json({
