@@ -90,7 +90,7 @@ Biggest achievement: ${achievement}
 
 Why they want this opportunity: ${motivation}
 
-Write 300–400 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs. Write entirely in ${langName}.`;
+Write exactly 350 words. Use first person. Make it specific and personal. Do not include a title, greeting, or sign-off — just the body paragraphs. Write entirely in ${langName}.`;
 
   try {
     const groq = new OpenAI({
