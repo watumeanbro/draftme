@@ -35,11 +35,20 @@ const SignUp = () => {
       });
 
       if (error) {
+        const msg = error.message?.toLowerCase() ?? "";
+        const code = (error as any).code ?? "";
         if (
-          error.message.toLowerCase().includes("already registered") ||
-          error.message.toLowerCase().includes("already exists") ||
-          error.message.toLowerCase().includes("user already") ||
+          code === "user_already_exists" ||
+          msg.includes("already registered") ||
+          msg.includes("already exists") ||
+          msg.includes("user already") ||
           error.status === 422
+        ) {
+          setError("An account with this email already exists. Please log in instead.");
+        } else if (
+          code === "over_email_send_rate_limit" ||
+          msg.includes("security purposes") ||
+          msg.includes("rate limit")
         ) {
           setError("An account with this email already exists. Please log in instead.");
         } else {
@@ -48,8 +57,7 @@ const SignUp = () => {
         return;
       }
 
-      // Supabase sometimes returns a user with identities=[] for existing emails
-      // (when email confirmation is on) instead of throwing an error
+      // Supabase returns identities=[] when email already exists (unconfirmed)
       if (data.user && data.user.identities && data.user.identities.length === 0) {
         setError("An account with this email already exists. Please log in instead.");
         return;
